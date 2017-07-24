@@ -19,6 +19,11 @@ namespace CB_Utilities_v6_9
         {
         }
 
+        protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
+        {
+            return new CM_Utilities_Ribbon();
+        }
+
         #region VSTO generated code
 
         /// <summary>
