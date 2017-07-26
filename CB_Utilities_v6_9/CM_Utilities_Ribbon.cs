@@ -117,12 +117,36 @@ namespace CB_Utilities_v6_9
                 throw;
             }
         }
-        public void RefreshShortcuts_Ribbon(Office.IRibbonControl rbnCtrl) { }
-        public void DeleteMyRoad_Ribbon(Office.IRibbonControl rbnCtrl) { }
-        public void FormatPrice_Ribbon(Office.IRibbonControl rbnCtrl) { }
-        public void FormatDateSpellOutMonth_Ribbon(Office.IRibbonControl rbnCtrl) { }
-        public void FormatPhoneNumber_Ribbon(Office.IRibbonControl rbnCtrl) { }
-        public void InterfaceForSpellNumber_Ribbon(Office.IRibbonControl rbnCtrl) { }
+
+        public void RefreshShortcuts_Ribbon(Office.IRibbonControl rbnCtrl)
+        {
+            MessageBox.Show("Coming Soon", "Refresh Shortcuts",MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        public void DeleteMyRoad_Ribbon(Office.IRibbonControl rbnCtrl)
+        {
+            MessageBox.Show("Not Coming Soon. You should delete this", "DeleteMyRoad", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public void FormatPrice_Ribbon(Office.IRibbonControl rbnCtrl)
+        {
+            MessageBox.Show("Coming Soon", "Format Price", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public void FormatDateSpellOutMonth_Ribbon(Office.IRibbonControl rbnCtrl)
+        {
+            MessageBox.Show("Coming Soon", "Format Date Spell Out Month", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public void FormatPhoneNumber_Ribbon(Office.IRibbonControl rbnCtrl)
+        {
+            MessageBox.Show("Coming Soon", "Format Phone Number", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public void InterfaceForSpellNumber_Ribbon(Office.IRibbonControl rbnCtrl)
+        {
+            MessageBox.Show("Coming Soon", "Spell Number", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         public bool GetEnabled(Office.IRibbonControl rbnCtrl)
         {
             return true;

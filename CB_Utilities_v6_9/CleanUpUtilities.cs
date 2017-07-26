@@ -108,14 +108,15 @@ namespace CB_Utilities_v6_9
             return sel.Information[Word.WdInformation.wdActiveEndPageNumber];
         }
 
-        //private static void RemoveSurroundingTables()
-        //{
-        //    Word.Selection sel = Globals.ThisAddIn.Application.Selection;
-        //    do while (sel.Information[Word.WdInformation.wdWithInTable])
-        //        {
-        //            do sel.Rows.ConvertToText(Word.WdTableFieldSeparator.wdSeparateByParagraphs, false);
-        //        }
-        //    sel.ParagraphFormat.SpaceAfter = 0.0;
-        //}
+        private static void RemoveSurroundingTables()
+        {
+            Word.Selection sel = Globals.ThisAddIn.Application.Selection;
+            do
+            {
+                sel.Rows.ConvertToText(Word.WdTableFieldSeparator.wdSeparateByParagraphs, false);
+            } while (sel.Information[Word.WdInformation.wdWithInTable]);
+
+            //sel.ParagraphFormat.SpaceAfter = 0.0;
+        }
     }
 }
