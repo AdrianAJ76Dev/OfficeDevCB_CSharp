@@ -78,6 +78,7 @@ namespace CB_Utilities_v6_9
             long lngPageNumberSignaturePage;
             Word.Selection sel;
             Word.AutoTextEntry hedaddendum;
+            Word.Template tmpl;
 
             const string strAUTOTEXT_AMENDMENT = "HSA - HED Standard Addendum";
             const int SIGNATURE_PAGE_AMENDMENT = 2;
@@ -102,7 +103,9 @@ namespace CB_Utilities_v6_9
                     sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
                     sel.Delete();
 
-                    // hedaddendum = Globals.ThisAddIn.Application.Templates();
+                    tmpl = Globals.ThisAddIn.Application.Templates[@"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v61.dotm"];
+                    hedaddendum = tmpl.AutoTextEntries[strAUTOTEXT_AMENDMENT];
+                    hedaddendum.Insert(sel.Range);
 
                     // Remove paragraph page before and consolidate signature page and Amendment page.
                     sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, SIGNATURE_PAGE_AMENDMENT);
