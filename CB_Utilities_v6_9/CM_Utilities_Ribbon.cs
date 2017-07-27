@@ -68,12 +68,17 @@ namespace CB_Utilities_v6_9
                 throw e;
             }
         }
+
         public void CreateSoleSourceLetter_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            // I think I'm going to try and do the "Web Version of the Sole Source Letter for this one.
+            MessageBox.Show("Coming Soon as a Web App", "Create Sole Source Letter", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
         public void MakeHEDAmendment_Ribbon(Office.IRibbonControl rbnCtrl)
         {
+            /* 07/27/2017 Create another class that handles all of this code or put it
+             * in The CleanUpUtilites class and change its name to just Utilities
+            */
             DialogResult lngResult;
             long lngPageNumberSignaturePage;
             Word.Selection sel;
@@ -103,16 +108,22 @@ namespace CB_Utilities_v6_9
                     sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
                     sel.Delete();
 
-                    tmpl = Globals.ThisAddIn.Application.Templates[@"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v61.dotm"];
+                    // 07/26/2017 This template is not found even though I have a copy here now.
+                    string templatefullname = @"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v61.dotm";
+                    
+                    /* 07/27/2017 Of course the templates collection is a collection of all loaded add-ins
+                     * so I may have to load the add-in here because it's no longer in Startup
+                    */
+                    tmpl = Globals.ThisAddIn.Application.Templates[templatefullname];
+
                     hedaddendum = tmpl.AutoTextEntries[strAUTOTEXT_AMENDMENT];
-                    hedaddendum.Insert(sel.Range);
+                    hedaddendum.Insert(sel.Range, true);
 
                     // Remove paragraph page before and consolidate signature page and Amendment page.
                     sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, SIGNATURE_PAGE_AMENDMENT);
                     sel.Range.ParagraphFormat.PageBreakBefore=-1;
                     sel.HomeKey(Word.WdUnits.wdStory);
                 }
-
             }
             catch (Exception)
             {
@@ -124,10 +135,6 @@ namespace CB_Utilities_v6_9
         public void RefreshShortcuts_Ribbon(Office.IRibbonControl rbnCtrl)
         {
             MessageBox.Show("Coming Soon", "Refresh Shortcuts",MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-        public void DeleteMyRoad_Ribbon(Office.IRibbonControl rbnCtrl)
-        {
-            MessageBox.Show("Not Coming Soon. You should delete this", "DeleteMyRoad", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public void FormatPrice_Ribbon(Office.IRibbonControl rbnCtrl)

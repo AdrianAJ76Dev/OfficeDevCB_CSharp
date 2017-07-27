@@ -103,7 +103,7 @@ namespace CB_Utilities_v6_9
             {
                 tmprange.Find.Execute(strFIND_SIGNATURE_PAGE_TEXT, Word.WdFindWrap.wdFindContinue);
                 tmprange.Select();
-            } while (tmprange.Find.Found == true && tmprange.Information[Word.WdInformation.wdWithInTable]);
+            } while (tmprange.Find.Found == true && tmprange.Information[Word.WdInformation.wdWithInTable]==false);
 
             return sel.Information[Word.WdInformation.wdActiveEndPageNumber];
         }
