@@ -140,6 +140,7 @@ namespace CB_Utilities_v6_9
         public void FormatPrice_Ribbon(Office.IRibbonControl rbnCtrl)
         {
             MessageBox.Show("Coming Soon", "Format Price", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            CleanUpUtilities.FormatPrice();
         }
 
         public void FormatDateSpellOutMonth_Ribbon(Office.IRibbonControl rbnCtrl)

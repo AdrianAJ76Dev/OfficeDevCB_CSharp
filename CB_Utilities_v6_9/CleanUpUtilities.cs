@@ -16,6 +16,7 @@ namespace CB_Utilities_v6_9
          * Purpose:         Separate code from the ribbon so it's not "so coupled together"
          * Updates:         06/19/2017 - None
          */
+
         public static void RemoveUnnecssaryRiders()
         {
             Word.Application app = Globals.ThisAddIn.Application;
@@ -108,6 +109,29 @@ namespace CB_Utilities_v6_9
             return sel.Information[Word.WdInformation.wdActiveEndPageNumber];
         }
 
+        public static void FormatPrice()
+        {
+            string price = string.Empty;
+            Word.Selection sel = Globals.ThisAddIn.Application.Selection;
+
+            if (sel.Information[Word.WdInformation.wdWithInTable])
+            {
+                foreach (Word.Range rngPrice in sel.Cells)
+                {
+                    if (rngPrice.Text.Contains("$"))
+                    {
+                        rngPrice.Text=string.Format("{0,C}", rngPrice.Text);
+                    }
+                }
+            }
+            else
+            {
+                /* Different behavior if user selects the entire number to format or
+                 * if user only drops cursor somewhere in the number
+                */
+            }
+        }
+
         private static void RemoveSurroundingTables()
         {
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
@@ -118,5 +142,7 @@ namespace CB_Utilities_v6_9
 
             //sel.ParagraphFormat.SpaceAfter = 0.0;
         }
+
+
     }
 }
