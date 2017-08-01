@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Office = Microsoft.Office.Core;
 using Word = Microsoft.Office.Interop.Word;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace CB_Utilities_v6_9
 {
@@ -111,16 +112,22 @@ namespace CB_Utilities_v6_9
 
         public static void FormatPrice()
         {
-            string price = string.Empty;
+            int price = 0;
+            string tmpPrice = string.Empty;
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
 
             if (sel.Information[Word.WdInformation.wdWithInTable])
             {
-                foreach (Word.Range rngPrice in sel.Cells)
+                foreach (Word.Cell rngTableCell in sel.Cells)
                 {
-                    if (rngPrice.Text.Contains("$"))
+                    tmpPrice = rngTableCell.Range.Text;
+                    if (tmpPrice.Contains("$"))
                     {
-                        rngPrice.Text=string.Format("{0,C}", rngPrice.Text);
+                        tmpPrice = tmpPrice.Replace("$", string.Empty);
+                        tmpPrice = tmpPrice.Replace("\r\a",string.Empty);
+                        tmpPrice = tmpPrice.Trim();
+                        tmpPrice = string.Format("{0:C}", int.Parse(tmpPrice));
+                        rngTableCell.Range.Text = tmpPrice;
                     }
                 }
             }
