@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Office = Microsoft.Office.Core;
 using Word = Microsoft.Office.Interop.Word;
+
+
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Diagnostics;
 
@@ -112,10 +116,27 @@ namespace CB_Utilities_v6_9
 
         public static void FormatPrice()
         {
-            int price = 0;
             string tmpPrice = string.Empty;
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
 
+            /* 08-1-2017 - The idea is to allow user to place cursor on number/price
+             * to be formatted. Instead of looking at ALL the characters in the number,
+             * the code "zooms" out to the next level of selection (price looks like a 
+             * collection of "words" instead of the price being "1 word". So, zoom out
+             * to a sentence and FIND the matching text
+             */
+            const string regexpattern = @"\$\.?\d";
+            Word.Range searchrange = Globals.ThisAddIn.Application.Selection.Range;
+            Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
+
+            Match m = regex.Match(sel.Sentences.First.Text);
+            if (m.Success)
+            {
+                sel.Sentences.First.Select();
+                Debug.WriteLine(m.Value);
+            }
+            
+            /*
             if (sel.Information[Word.WdInformation.wdWithInTable])
             {
                 foreach (Word.Cell rngTableCell in sel.Cells)
@@ -123,15 +144,16 @@ namespace CB_Utilities_v6_9
                     tmpPrice = rngTableCell.Range.Text;
                     if (tmpPrice.Contains("$"))
                     {
-                        tmpPrice = tmpPrice.Replace("$", string.Empty);
+                        //tmpPrice = tmpPrice.Replace("$", string.Empty);
                         tmpPrice = tmpPrice.Replace("\r\a",string.Empty);
-                        tmpPrice = tmpPrice.Trim();
-                        tmpPrice = string.Format("{0:C}", int.Parse(tmpPrice));
+                        //tmpPrice = tmpPrice.Trim();
+                        tmpPrice = string.Format("{0:C}", float.Parse(tmpPrice));
                         rngTableCell.Range.Text = tmpPrice;
                     }
                 }
             }
-            else
+            */
+            // else
             {
                 /* Different behavior if user selects the entire number to format or
                  * if user only drops cursor somewhere in the number
