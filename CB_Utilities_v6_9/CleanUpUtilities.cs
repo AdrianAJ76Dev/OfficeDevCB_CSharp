@@ -125,15 +125,16 @@ namespace CB_Utilities_v6_9
              * collection of "words" instead of the price being "1 word". So, zoom out
              * to a sentence and FIND the matching text
              */
-            const string regexpattern = @"\$\.?\d";
+            const string regexpattern = @"\d{1,10}";
             Word.Range searchrange = Globals.ThisAddIn.Application.Selection.Range;
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
 
-            Match m = regex.Match(sel.Sentences.First.Text);
+            Match m = regex.Match(searchrange.Sentences.First.Text);
             if (m.Success)
             {
-                sel.Sentences.First.Select();
-                Debug.WriteLine(m.Value);
+                searchrange.Sentences.First.Select();
+                searchrange.SetRange(m.Index, (m.Index + m.Length));
+                searchrange.Select();
             }
             
             /*
