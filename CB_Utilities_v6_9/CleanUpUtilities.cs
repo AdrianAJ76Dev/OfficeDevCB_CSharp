@@ -116,28 +116,53 @@ namespace CB_Utilities_v6_9
 
         public static void FormatPrice()
         {
-            string tmpPrice = string.Empty;
-            Word.Selection sel = Globals.ThisAddIn.Application.Selection;
-
-            /* 08-1-2017 - The idea is to allow user to place cursor on number/price
+            /* 08-1-2017 - The idea is to allow user to place *cursor* on number/price
              * to be formatted. Instead of looking at ALL the characters in the number,
              * the code "zooms" out to the next level of selection (price looks like a 
              * collection of "words" instead of the price being "1 word". So, zoom out
              * to a sentence and FIND the matching text
+             * 
+             * When the selection is larger than just a *cursor* Need to accomodate that.
              */
-            const string regexpattern = @"\d{1,10}";
-            Word.Range searchrange = Globals.ThisAddIn.Application.Selection.Range;
+            // This is what the malformed price looks like.
+            const string regexpattern = @"[$]\s?\d+\S\d{2}";
+
+            Word.Selection sel = Globals.ThisAddIn.Application.Selection;
+            Word.Range startrange = sel.Range;
+            Word.Range searchrange = sel.Range;
+            Word.Range tmprange = sel.Range;
+
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
 
-            Match m = regex.Match(searchrange.Sentences.First.Text);
-            if (m.Success)
+            if (startrange.Start == startrange.End) // Only a cursor
             {
-                searchrange.Sentences.First.Select();
-                searchrange.SetRange(m.Index, (m.Index + m.Length));
-                searchrange.Select();
+                //The Smallest Search Context: a sentence (see comment above) WHEN multiple paragraphs is NOT selected.
+                searchrange = sel.Sentences.First;
             }
+            else if (startrange.Paragraphs.Count > 1)
+            {
+                searchrange = sel.Range;
+            }
+
+            MatchCollection ms = regex.Matches(searchrange.Text);
+            Debug.WriteLine("Matches Found " + ms.Count);
+            Debug.WriteLine("******************************************");
             
+            foreach (Match singlematch in ms)
+            {
+                Debug.WriteLine("Match Value: " + singlematch.Value);
+                Debug.WriteLine("Index/Start Position: " + singlematch.Index);
+                Debug.WriteLine("Length: " + singlematch.Length);
+                tmprange.SetRange((searchrange.Start + singlematch.Index),
+                        (searchrange.Start + (singlematch.Index + singlematch.Length)));
+                // Comment out when done debugging
+                tmprange.Select();
+            }
+            Debug.WriteLine("******************************************");
+
+
             /*
+            string tmpPrice=String.Empty;
             if (sel.Information[Word.WdInformation.wdWithInTable])
             {
                 foreach (Word.Cell rngTableCell in sel.Cells)
