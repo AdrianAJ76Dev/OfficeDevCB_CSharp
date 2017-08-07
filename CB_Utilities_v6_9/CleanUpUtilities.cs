@@ -134,7 +134,7 @@ namespace CB_Utilities_v6_9
 
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
 
-            if (startrange.Start == startrange.End) // Only a cursor
+            if (sel.Type==Word.WdSelectionType.wdSelectionIP) // Only a cursor
             {
                 //The Smallest Search Context: a sentence (see comment above) WHEN multiple paragraphs is NOT selected.
                 searchrange = sel.Sentences.First;
@@ -153,10 +153,21 @@ namespace CB_Utilities_v6_9
                 Debug.WriteLine("Match Value: " + singlematch.Value);
                 Debug.WriteLine("Index/Start Position: " + singlematch.Index);
                 Debug.WriteLine("Length: " + singlematch.Length);
+
+                // Have to reevaluate this logic because it does not work in table Cells!!
                 tmprange.SetRange((searchrange.Start + singlematch.Index),
                         (searchrange.Start + (singlematch.Index + singlematch.Length)));
-                // Comment out when done debugging
-                tmprange.Select();
+                
+                // Is startrange "position" within 1st Match, 2nd, etc.?
+                if (startrange.InRange(tmprange))
+                {
+                    tmprange.Select();
+                }
+                else if (searchrange.Information[Word.WdInformation.wdWithInTable])
+                {
+                    //foreach (Word.Cell rngTableCell in sel.Cells) { }
+                    tmprange.Select();
+                }
             }
             Debug.WriteLine("******************************************");
 
