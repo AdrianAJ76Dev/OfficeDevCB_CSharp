@@ -154,19 +154,18 @@ namespace CB_Utilities_v6_9
                 Debug.WriteLine("Index/Start Position: " + singlematch.Index);
                 Debug.WriteLine("Length: " + singlematch.Length);
 
-                // Have to reevaluate this logic because it does not work in table Cells!!
-                tmprange.SetRange((searchrange.Start + singlematch.Index),
-                        (searchrange.Start + (singlematch.Index + singlematch.Length)));
-                
                 // Is startrange "position" within 1st Match, 2nd, etc.?
                 if (startrange.InRange(tmprange))
                 {
+                    // Have to reevaluate this logic because it does not work in table Cells!!
+                    tmprange.SetRange((searchrange.Start + singlematch.Index),
+                            (searchrange.Start + (singlematch.Index + singlematch.Length)));
                     tmprange.Select();
                 }
                 else if (searchrange.Information[Word.WdInformation.wdWithInTable])
                 {
                     //foreach (Word.Cell rngTableCell in sel.Cells) { }
-                    tmprange.Select();
+                    // tmprange.Select();
                 }
             }
             Debug.WriteLine("******************************************");
