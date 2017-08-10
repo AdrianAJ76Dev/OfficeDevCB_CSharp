@@ -145,16 +145,27 @@ namespace CB_Utilities_v6_9
             }
 
             MatchCollection ms = regex.Matches(searchrange.Text);
-            Debug.WriteLine("Matches Found " + ms.Count);
-            Debug.WriteLine("******************************************");
-            
             foreach (Match singlematch in ms)
             {
-                Debug.WriteLine("Match Value: " + singlematch.Value);
-                Debug.WriteLine("Index/Start Position: " + singlematch.Index);
-                Debug.WriteLine("Length: " + singlematch.Length);
-
                 // Is startrange "position" within 1st Match, 2nd, etc.?
+                if (searchrange.Information[Word.WdInformation.wdWithInTable])
+                {
+                    // Have to reevaluate this logic because it does not work in table Cells!!
+                    Debug.WriteLine("Search Range Start: {0}", searchrange.Start);
+                    Debug.WriteLine("Match Start: {0}", singlematch.Index);
+                    Debug.WriteLine("**********************************************");
+                    tmprange.SetRange((searchrange.Start + singlematch.Index),
+                        searchrange.Start + (singlematch.Index + (singlematch.Length - 1)));
+                    Debug.WriteLine("tmprange.Start {0}", tmprange.Start);
+                    Debug.WriteLine("tmprange.End {0}", tmprange.End);
+                    tmprange.Select();
+
+                    /* Starts as a column selection --- if a column in a table is selection
+                     * 
+                     */
+                    //foreach (Word.Cell rngTableCell in sel.Cells) { }
+                    // tmprange.Select();
+                }
                 if (startrange.InRange(tmprange))
                 {
                     // Have to reevaluate this logic because it does not work in table Cells!!
@@ -162,13 +173,7 @@ namespace CB_Utilities_v6_9
                             (searchrange.Start + (singlematch.Index + singlematch.Length)));
                     tmprange.Select();
                 }
-                else if (searchrange.Information[Word.WdInformation.wdWithInTable])
-                {
-                    //foreach (Word.Cell rngTableCell in sel.Cells) { }
-                    // tmprange.Select();
-                }
             }
-            Debug.WriteLine("******************************************");
 
 
             /*
@@ -189,12 +194,12 @@ namespace CB_Utilities_v6_9
                 }
             }
             */
-            // else
-            {
-                /* Different behavior if user selects the entire number to format or
-                 * if user only drops cursor somewhere in the number
-                */
-            }
+                    // else
+                    {
+                        /* Different behavior if user selects the entire number to format or
+                         * if user only drops cursor somewhere in the number
+                        */
+                    }
         }
 
         private static void RemoveSurroundingTables()
