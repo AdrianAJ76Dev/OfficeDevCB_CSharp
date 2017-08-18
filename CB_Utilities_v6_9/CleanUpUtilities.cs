@@ -144,6 +144,8 @@ namespace CB_Utilities_v6_9
                 searchrange = sel.Range;
             }
 
+            searchrange.Find.Execute(@"[$]\s?\d+\S\d{2}");
+
             MatchCollection ms = regex.Matches(searchrange.Text);
             foreach (Match singlematch in ms)
             {
@@ -153,9 +155,11 @@ namespace CB_Utilities_v6_9
                     // Have to reevaluate this logic because it does not work in table Cells!!
                     Debug.WriteLine("Search Range Start: {0}", searchrange.Start);
                     Debug.WriteLine("Match Start: {0}", singlematch.Index);
-                    Debug.WriteLine("**********************************************");
-                    tmprange.SetRange((searchrange.Start + singlematch.Index),
-                        searchrange.Start + (singlematch.Index + (singlematch.Length - 1)));
+                    Debug.WriteLine("Total of the above: {0}", (searchrange.Start + singlematch.Index));
+                    Debug.WriteLine("*********************************************************************");
+
+                    tmprange.SetRange((searchrange.Start + singlematch.Index), (searchrange.Start + singlematch.Index));
+
                     Debug.WriteLine("tmprange.Start {0}", tmprange.Start);
                     Debug.WriteLine("tmprange.End {0}", tmprange.End);
                     tmprange.Select();
@@ -169,8 +173,7 @@ namespace CB_Utilities_v6_9
                 if (startrange.InRange(tmprange))
                 {
                     // Have to reevaluate this logic because it does not work in table Cells!!
-                    tmprange.SetRange((searchrange.Start + singlematch.Index),
-                            (searchrange.Start + (singlematch.Index + singlematch.Length)));
+                    tmprange.SetRange((searchrange.Start + singlematch.Index), (searchrange.Start + singlematch.Index));
                     tmprange.Select();
                 }
             }
