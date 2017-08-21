@@ -132,20 +132,40 @@ namespace CB_Utilities_v6_9
             Word.Range searchrange = sel.Range;
             Word.Range tmprange = sel.Range;
 
+            bool found = false;
+
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
 
-            if (sel.Type==Word.WdSelectionType.wdSelectionIP) // Only a cursor
+            /* The trick in these selection ranges is, 1st of all, is it in a table or not
+             * If it is in a table, the selection behavior will be little different 
+             * (column & cells vs Sentences and words)
+             */
+
+            if (sel.Information[Word.WdInformation.wdWithInTable] && sel.Type == Word.WdSelectionType.wdSelectionIP)
             {
-                //The Smallest Search Context: a sentence (see comment above) WHEN multiple paragraphs is NOT selected.
-                searchrange = sel.Sentences.First;
+                sel.SelectCell();
             }
-            else if (startrange.Paragraphs.Count > 1)
+            else if (sel.Information[Word.WdInformation.wdWithInTable] && sel.Type == Word.WdSelectionType.wdSelectionColumn)
             {
-                searchrange = sel.Range;
+                sel.SelectColumn();
             }
 
-            searchrange.Find.Execute(@"[$]\s?\d+\S\d{2}");
+            searchrange = sel.Range;
 
+            sel.Find.Text = "[$]";
+                // @"[$]\s?\d+\S\d{2}";
+            sel.Find.MatchWildcards = true;
+            do
+            {
+                found = sel.Find.Execute();
+                if (found)
+                {
+                    searchrange.Select();
+                    //string.Format("$ ###,###,###.00", sel.Text);
+                }
+            } while (found);
+
+            /*
             MatchCollection ms = regex.Matches(searchrange.Text);
             foreach (Match singlematch in ms)
             {
@@ -169,7 +189,8 @@ namespace CB_Utilities_v6_9
                      */
                     //foreach (Word.Cell rngTableCell in sel.Cells) { }
                     // tmprange.Select();
-                }
+                //}
+                /*
                 if (startrange.InRange(tmprange))
                 {
                     // Have to reevaluate this logic because it does not work in table Cells!!
@@ -177,7 +198,7 @@ namespace CB_Utilities_v6_9
                     tmprange.Select();
                 }
             }
-
+            */
 
             /*
             string tmpPrice=String.Empty;
