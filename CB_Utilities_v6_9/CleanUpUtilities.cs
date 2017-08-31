@@ -152,18 +152,24 @@ namespace CB_Utilities_v6_9
 
             searchrange = sel.Range;
 
-            sel.Find.Text = "[$]";
-                // @"[$]\s?\d+\S\d{2}";
-            sel.Find.MatchWildcards = true;
+            searchrange.Find.Text = "[$]";
+            // @"[$]\s?\d+\S\d{2}";
+            searchrange.Find.MatchWildcards = true;
+
             do
             {
-                found = sel.Find.Execute();
-                if (found)
+                // found = sel.Find.Execute();
+                // sel.Find.Execute();
+                searchrange.Find.Execute();
+                if (searchrange.Find.Found)
                 {
-                    searchrange.Select();
+                    sel.Select();
+                    sel.Start++;
+                    sel.Select();
+
                     //string.Format("$ ###,###,###.00", sel.Text);
                 }
-            } while (found);
+            } while (searchrange.Find.Found);
 
             /*
             MatchCollection ms = regex.Matches(searchrange.Text);
