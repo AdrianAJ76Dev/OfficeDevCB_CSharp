@@ -128,19 +128,17 @@ namespace CB_Utilities_v6_9
             const string regexpattern = @"[$]\s?\d+\S\d{2}";
 
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
-            Word.Range startrange = sel.Range;
+            // Word.Range startrange = sel.Range;
             Word.Range searchrange = sel.Range;
-            Word.Range tmprange = sel.Range;
-
-            bool found = false;
+            // Word.Range tmprange = sel.Range;
 
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
 
             /* The trick in these selection ranges is, 1st of all, is it in a table or not
              * If it is in a table, the selection behavior will be little different 
              * (column & cells vs Sentences and words)
-             */
-
+             * 
+             * 
             if (sel.Information[Word.WdInformation.wdWithInTable] && sel.Type == Word.WdSelectionType.wdSelectionIP)
             {
                 sel.SelectCell();
@@ -149,27 +147,23 @@ namespace CB_Utilities_v6_9
             {
                 sel.SelectColumn();
             }
-
-            searchrange = sel.Range;
-
-            searchrange.Find.Text = "[$]";
+             */
+            sel.Find.Text = "[$]?[0-9]{4,}";
             // @"[$]\s?\d+\S\d{2}";
-            searchrange.Find.MatchWildcards = true;
-
+            sel.Find.MatchWildcards = true;
             do
             {
                 // found = sel.Find.Execute();
                 // sel.Find.Execute();
-                searchrange.Find.Execute();
-                if (searchrange.Find.Found)
+                sel.Find.Execute();
+                if (sel.Find.Found)
                 {
                     sel.Select();
-                    sel.Start++;
-                    sel.Select();
-
+                    sel.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
                     //string.Format("$ ###,###,###.00", sel.Text);
                 }
-            } while (searchrange.Find.Found);
+
+            } while (sel.Find.Found && sel.InRange(searchrange));
 
             /*
             MatchCollection ms = regex.Matches(searchrange.Text);
