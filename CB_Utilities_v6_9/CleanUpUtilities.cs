@@ -149,7 +149,7 @@ namespace CB_Utilities_v6_9
                 sel.SelectColumn();
             }
              */
-            sel.Find.Text = "[$]?[0-9]{4,}?[0-9]{2}";
+            sel.Find.Text = "[$]?[0-9]{4,}[.][0-9]{2}";
             // @"[$]\s?\d+\S\d{2}";
             sel.Find.MatchWildcards = true;
             sel.Find.Execute();
@@ -158,6 +158,7 @@ namespace CB_Utilities_v6_9
                 if (sel.Find.Found)
                 {
                     sel.Select();
+                    sel.Text=String.Format("{0:$ ###,###,###.00}", sel.Text);
                     sel.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
                     endrange = sel.Range;
                     //string.Format("$ ###,###,###.00", sel.Text);
@@ -165,80 +166,6 @@ namespace CB_Utilities_v6_9
                 sel.Find.Execute();
             }
             endrange.Select();
-            /*
-            do
-            {
-                // found = sel.Find.Execute();
-                // sel.Find.Execute();
-                sel.Find.Execute();
-                if (sel.Find.Found)
-                {
-                    sel.Select();
-                    sel.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
-                    //string.Format("$ ###,###,###.00", sel.Text);
-                }
-
-            } while (sel.Find.Found && sel.InRange(searchrange));
-            */
-            /*
-            MatchCollection ms = regex.Matches(searchrange.Text);
-            foreach (Match singlematch in ms)
-            {
-                // Is startrange "position" within 1st Match, 2nd, etc.?
-                if (searchrange.Information[Word.WdInformation.wdWithInTable])
-                {
-                    // Have to reevaluate this logic because it does not work in table Cells!!
-                    Debug.WriteLine("Search Range Start: {0}", searchrange.Start);
-                    Debug.WriteLine("Match Start: {0}", singlematch.Index);
-                    Debug.WriteLine("Total of the above: {0}", (searchrange.Start + singlematch.Index));
-                    Debug.WriteLine("*********************************************************************");
-
-                    tmprange.SetRange((searchrange.Start + singlematch.Index), (searchrange.Start + singlematch.Index));
-
-                    Debug.WriteLine("tmprange.Start {0}", tmprange.Start);
-                    Debug.WriteLine("tmprange.End {0}", tmprange.End);
-                    tmprange.Select();
-
-                    /* Starts as a column selection --- if a column in a table is selection
-                     * 
-                     */
-            //foreach (Word.Cell rngTableCell in sel.Cells) { }
-            // tmprange.Select();
-            //}
-            /*
-            if (startrange.InRange(tmprange))
-            {
-                // Have to reevaluate this logic because it does not work in table Cells!!
-                tmprange.SetRange((searchrange.Start + singlematch.Index), (searchrange.Start + singlematch.Index));
-                tmprange.Select();
-            }
-        }
-        */
-
-            /*
-            string tmpPrice=String.Empty;
-            if (sel.Information[Word.WdInformation.wdWithInTable])
-            {
-                foreach (Word.Cell rngTableCell in sel.Cells)
-                {
-                    tmpPrice = rngTableCell.Range.Text;
-                    if (tmpPrice.Contains("$"))
-                    {
-                        //tmpPrice = tmpPrice.Replace("$", string.Empty);
-                        tmpPrice = tmpPrice.Replace("\r\a",string.Empty);
-                        //tmpPrice = tmpPrice.Trim();
-                        tmpPrice = string.Format("{0:C}", float.Parse(tmpPrice));
-                        rngTableCell.Range.Text = tmpPrice;
-                    }
-                }
-            }
-            */
-            // else
-            {
-                        /* Different behavior if user selects the entire number to format or
-                         * if user only drops cursor somewhere in the number
-                        */
-                    }
         }
 
         private static void RemoveSurroundingTables()
