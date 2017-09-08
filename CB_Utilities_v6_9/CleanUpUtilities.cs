@@ -126,46 +126,43 @@ namespace CB_Utilities_v6_9
              */
             // This is what the malformed price looks like.
             const string regexpattern = @"[$]\s?\d+\S\d{2}";
+            const string regexpatternword = "[$]?[0-9]{4,}[.][0-9]{2}";
+            char[] stripchars = {'$'};
 
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
-            // Word.Range startrange = sel.Range;
             Word.Range searchrange = sel.Range;
             Word.Range endrange = sel.Range;
-            // Word.Range tmprange = sel.Range;
 
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
-
-            /* The trick in these selection ranges is, 1st of all, is it in a table or not
-             * If it is in a table, the selection behavior will be little different 
-             * (column & cells vs Sentences and words)
-             * 
-             * 
-            if (sel.Information[Word.WdInformation.wdWithInTable] && sel.Type == Word.WdSelectionType.wdSelectionIP)
-            {
-                sel.SelectCell();
-            }
-            else if (sel.Information[Word.WdInformation.wdWithInTable] && sel.Type == Word.WdSelectionType.wdSelectionColumn)
-            {
-                sel.SelectColumn();
-            }
-             */
-            sel.Find.Text = "[$]?[0-9]{4,}[.][0-9]{2}";
-            // @"[$]\s?\d+\S\d{2}";
+            sel.Find.Text = regexpatternword;
             sel.Find.MatchWildcards = true;
-            sel.Find.Execute();
-            while (sel.Find.Found && sel.InRange(searchrange))
+
+            if (sel.Information)
             {
-                if (sel.Find.Found)
-                {
-                    sel.Select();
-                    sel.Text=String.Format("{0:$ ###,###,###.00}", sel.Text);
-                    sel.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
-                    endrange = sel.Range;
-                    //string.Format("$ ###,###,###.00", sel.Text);
-                }
-                sel.Find.Execute();
+
             }
-            endrange.Select();
+
+            MatchCollection selprices = regex.Matches(searchrange.Text);
+            if (selprices.Count==1)
+            {
+                sel.Text = double.Parse(sel.Text.Trim(stripchars)).ToString("C2");
+            }
+            else
+            {
+                sel.Find.Execute();
+                while (sel.Find.Found && sel.InRange(searchrange))
+                {
+                    if (sel.Find.Found)
+                    {
+                        sel.Select();
+                        sel.Text = double.Parse(sel.Text.Trim(stripchars)).ToString("C2");
+                        sel.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
+                        endrange = sel.Range;
+                    }
+                    sel.Find.Execute();
+                }
+                endrange.Select();
+            }
         }
 
         private static void RemoveSurroundingTables()
