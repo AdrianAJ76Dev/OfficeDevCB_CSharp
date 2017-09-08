@@ -137,9 +137,12 @@ namespace CB_Utilities_v6_9
             sel.Find.Text = regexpatternword;
             sel.Find.MatchWildcards = true;
 
-            if (sel.Information)
+            if (sel.Type==Word.WdSelectionType.wdSelectionIP)
             {
-
+                searchrange=sel.Sentences[1];
+                searchrange.Select();
+                searchrange.MoveEnd(Word.WdUnits.wdCharacter, -1);
+                searchrange.Select();
             }
 
             MatchCollection selprices = regex.Matches(searchrange.Text);
