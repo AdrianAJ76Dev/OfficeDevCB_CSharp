@@ -130,6 +130,7 @@ namespace CB_Utilities_v6_9
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
             // Word.Range startrange = sel.Range;
             Word.Range searchrange = sel.Range;
+            Word.Range endrange = sel.Range;
             // Word.Range tmprange = sel.Range;
 
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
@@ -148,9 +149,23 @@ namespace CB_Utilities_v6_9
                 sel.SelectColumn();
             }
              */
-            sel.Find.Text = "[$]?[0-9]{4,}";
+            sel.Find.Text = "[$]?[0-9]{4,}?[0-9]{2}";
             // @"[$]\s?\d+\S\d{2}";
             sel.Find.MatchWildcards = true;
+            sel.Find.Execute();
+            while (sel.Find.Found && sel.InRange(searchrange))
+            {
+                if (sel.Find.Found)
+                {
+                    sel.Select();
+                    sel.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
+                    endrange = sel.Range;
+                    //string.Format("$ ###,###,###.00", sel.Text);
+                }
+                sel.Find.Execute();
+            }
+            endrange.Select();
+            /*
             do
             {
                 // found = sel.Find.Execute();
@@ -164,7 +179,7 @@ namespace CB_Utilities_v6_9
                 }
 
             } while (sel.Find.Found && sel.InRange(searchrange));
-
+            */
             /*
             MatchCollection ms = regex.Matches(searchrange.Text);
             foreach (Match singlematch in ms)
@@ -187,18 +202,18 @@ namespace CB_Utilities_v6_9
                     /* Starts as a column selection --- if a column in a table is selection
                      * 
                      */
-                    //foreach (Word.Cell rngTableCell in sel.Cells) { }
-                    // tmprange.Select();
-                //}
-                /*
-                if (startrange.InRange(tmprange))
-                {
-                    // Have to reevaluate this logic because it does not work in table Cells!!
-                    tmprange.SetRange((searchrange.Start + singlematch.Index), (searchrange.Start + singlematch.Index));
-                    tmprange.Select();
-                }
+            //foreach (Word.Cell rngTableCell in sel.Cells) { }
+            // tmprange.Select();
+            //}
+            /*
+            if (startrange.InRange(tmprange))
+            {
+                // Have to reevaluate this logic because it does not work in table Cells!!
+                tmprange.SetRange((searchrange.Start + singlematch.Index), (searchrange.Start + singlematch.Index));
+                tmprange.Select();
             }
-            */
+        }
+        */
 
             /*
             string tmpPrice=String.Empty;
@@ -218,8 +233,8 @@ namespace CB_Utilities_v6_9
                 }
             }
             */
-                    // else
-                    {
+            // else
+            {
                         /* Different behavior if user selects the entire number to format or
                          * if user only drops cursor somewhere in the number
                         */
