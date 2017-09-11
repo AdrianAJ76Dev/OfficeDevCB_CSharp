@@ -168,6 +168,12 @@ namespace CB_Utilities_v6_9
             }
         }
 
+        public static void SpellOutNumber() { }
+
+        public static void SpellOutDate() { }
+
+        public static void FormatPhoneNumber () { }
+
         private static void RemoveSurroundingTables()
         {
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
@@ -178,7 +184,5 @@ namespace CB_Utilities_v6_9
 
             //sel.ParagraphFormat.SpaceAfter = 0.0;
         }
-
-
     }
 }
