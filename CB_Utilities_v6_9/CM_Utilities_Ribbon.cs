@@ -149,7 +149,7 @@ namespace CB_Utilities_v6_9
 
         public void FormatPhoneNumber_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            MessageBox.Show("Coming Soon", "Format Phone Number", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            CleanUpUtilities.FormatPhoneNumber();
         }
 
         public void InterfaceForSpellNumber_Ribbon(Office.IRibbonControl rbnCtrl)

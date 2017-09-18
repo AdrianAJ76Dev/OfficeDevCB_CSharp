@@ -172,7 +172,24 @@ namespace CB_Utilities_v6_9
 
         public static void SpellOutDate() { }
 
-        public static void FormatPhoneNumber () { }
+        public static void FormatPhoneNumber ()
+        {
+            Word.Selection sel = Globals.ThisAddIn.Application.Selection;
+            string strPhoneNumberDigits;
+
+            strPhoneNumberDigits=sel.Words[1].Text;
+            strPhoneNumberDigits = strPhoneNumberDigits.Trim();
+
+            if (strPhoneNumberDigits.Length == 10 && int.TryParse(strPhoneNumberDigits, out int result))
+            {
+                strPhoneNumberDigits = result.ToString("(###) ###-####");
+                sel.Words[1].Text = strPhoneNumberDigits;
+            }
+            else
+                MessageBox.Show("Your selection does not solely consist of numbers\n"
+                    + "or consists of more than or less than 10 digits - Number Count: " + strPhoneNumberDigits.Length, 
+                    "Format Phone #", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        }
 
         private static void RemoveSurroundingTables()
         {
