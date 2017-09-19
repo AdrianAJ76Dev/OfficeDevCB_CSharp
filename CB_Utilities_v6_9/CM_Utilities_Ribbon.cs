@@ -144,7 +144,7 @@ namespace CB_Utilities_v6_9
 
         public void FormatDateSpellOutMonth_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            MessageBox.Show("Coming Soon", "Format Date Spell Out Month", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            CleanUpUtilities.SpellOutMonth();
         }
 
         public void FormatPhoneNumber_Ribbon(Office.IRibbonControl rbnCtrl)
@@ -154,7 +154,7 @@ namespace CB_Utilities_v6_9
 
         public void InterfaceForSpellNumber_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            MessageBox.Show("Coming Soon", "Spell Number", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            CleanUpUtilities.SpellOutNumber();
         }
 
         public bool GetEnabled(Office.IRibbonControl rbnCtrl)

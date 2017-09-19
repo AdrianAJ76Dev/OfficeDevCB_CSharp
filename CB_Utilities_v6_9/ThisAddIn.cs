@@ -14,18 +14,20 @@ namespace CB_Utilities_v6_9
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
             // Find the global add-in and load for AutoText
-            /* Work */
+            /* Work
             string templatefullname = 
                 @"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v61.dotm";
-            /**/
+            */
 
             /* Home
             string templatefullname =
                 @"D:\Dev Projects\MS Office Development\CM Utilities v61.dotm";
             */
 
-            // Ran this once and after running, it seems to autoload the add-in.
-            Globals.ThisAddIn.Application.AddIns[templatefullname].Installed = true;
+            /* Ran this once and after running, it seems to autoload the add-in.
+             * Will need this to have access to AutoText
+            // Globals.ThisAddIn.Application.AddIns[templatefullname].Installed = true;
+            */
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)

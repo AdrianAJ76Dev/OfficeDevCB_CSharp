@@ -11,7 +11,7 @@
         </group>
         <group id="mso_c3.181061F" label="Formatting" autoScale="true">
           <button id="FormatPrice_2_1847749" label="Price" imageMso="DollarSign" onAction="FormatPrice_Ribbon" screentip="Alt-$" visible="true" size="large" getEnabled="GetEnabled" />
-          <button id="FormatDateSpellOutMonth_3_1847749" label="Spell Out Date" imageMso="TableSelect" onAction="FormatDateSpellOutMonth_Ribbon" screentip="Alt-F,D" visible="true" size="large" getEnabled="GetEnabled" />
+          <button id="FormatDateSpellOutMonth_3_1847749" label="Spell Out Month" imageMso="TableSelect" onAction="FormatDateSpellOutMonth_Ribbon" screentip="Alt-F,D" visible="true" size="large" getEnabled="GetEnabled" />
           <button id="FormatPhoneNumber_4_1847749" label="Phone Number" imageMso="AutoDial" onAction="FormatPhoneNumber_Ribbon" screentip="Alt-F,P" visible="true" size="large" getEnabled="GetEnabled" />
           <button id="InterfaceForSpellNumber_5_1847749" label="Spell Out Number" imageMso="MailMergeResultsPreview" onAction="InterfaceForSpellNumber_Ribbon" screentip="Alt-S,N" visible="true" size="large" getEnabled="GetEnabled" />
         </group>
