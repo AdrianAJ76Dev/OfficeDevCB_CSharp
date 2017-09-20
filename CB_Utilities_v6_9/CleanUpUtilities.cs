@@ -244,6 +244,29 @@ namespace CB_Utilities_v6_9
                     "Format Phone #", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
+        public static void FormatCommonwealth()
+        {
+            Word.Document activedocument = Globals.ThisAddIn.Application.ActiveDocument;
+            Word.Selection sel = Globals.ThisAddIn.Application.Selection;
+            Word.Range wrdState;
+            Word.Range rngSelectedStateOfPhrase;
+
+            string strCommonwealth=String.Empty;
+            const int PARA_COMMONWEALTH = 3;
+            const int POSITION_STATE_OF = 76;
+            const int POSITION_STATE = 78;
+
+            string state = String.Empty;
+            bool IsCommonwealth = false;
+            string[] aresult;
+            string[] acommonwealths = { "Kentucky", "Massachusetts", "Pennsylvania", "Virginia" };
+
+            sel.HomeKey(Word.WdUnits.wdStory);
+            wrdState = activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE];
+            rngSelectedStateOfPhrase = activedocument.Range(ref object Start = activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE_OF].Start);
+        }
+
+
         private static void RemoveSurroundingTables()
         {
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;

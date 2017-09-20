@@ -71,7 +71,7 @@ namespace CB_Utilities_v6_9
 
         public void CreateSoleSourceLetter_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            MessageBox.Show("Coming Soon as a Web App", "Create Sole Source Letter", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Coming Soon", "Create Sole Source Letter", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public void MakeHEDAmendment_Ribbon(Office.IRibbonControl rbnCtrl)
@@ -127,14 +127,8 @@ namespace CB_Utilities_v6_9
             }
             catch (Exception)
             {
-
                 throw;
             }
-        }
-
-        public void RefreshShortcuts_Ribbon(Office.IRibbonControl rbnCtrl)
-        {
-            MessageBox.Show("Coming Soon", "Refresh Shortcuts",MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public void FormatPrice_Ribbon(Office.IRibbonControl rbnCtrl)
