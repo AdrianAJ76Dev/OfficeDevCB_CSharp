@@ -258,14 +258,29 @@ namespace CB_Utilities_v6_9
 
             string state = String.Empty;
             bool IsCommonwealth = false;
-            string[] aresult;
+            //string[] aresult;
             string[] acommonwealths = { "Kentucky", "Massachusetts", "Pennsylvania", "Virginia" };
 
             sel.HomeKey(Word.WdUnits.wdStory);
             wrdState = activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE];
-            rngSelectedStateOfPhrase = activedocument.Range(ref object Start = activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE_OF].Start);
-        }
+            rngSelectedStateOfPhrase = activedocument.Range(
+                activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE_OF].Start, 
+                activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE].End
+                );
 
+            rngSelectedStateOfPhrase.Select();
+
+            // Search for match in array.
+            IsCommonwealth = acommonwealths.Contains(wrdState.Text);
+
+            //Replace "State" with "Commonwealth"
+            if (IsCommonwealth)
+            {
+                activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE_OF].Text = "Commonwealth ";
+            }
+
+            rngSelectedStateOfPhrase.Select();
+        }
 
         private static void RemoveSurroundingTables()
         {

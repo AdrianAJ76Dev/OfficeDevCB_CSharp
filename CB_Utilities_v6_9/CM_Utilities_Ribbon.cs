@@ -146,6 +146,11 @@ namespace CB_Utilities_v6_9
             CleanUpUtilities.FormatPhoneNumber();
         }
 
+        public void FormatCommonwealth_Ribbon(Office.IRibbonControl rbnCtrl)
+        {
+            CleanUpUtilities.FormatCommonwealth();
+        }
+
         public void InterfaceForSpellNumber_Ribbon(Office.IRibbonControl rbnCtrl)
         {
             CleanUpUtilities.SpellOutNumber();
