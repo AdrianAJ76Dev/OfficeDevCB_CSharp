@@ -14,6 +14,7 @@
           <button id="FormatPhoneNumber_4_1847749" label="Phone Number" imageMso="AutoDial" onAction="FormatPhoneNumber_Ribbon" visible="true" size="large" getEnabled="GetEnabled" />
           <button id="InterfaceForSpellNumber_5_1847749" label="Spell Out Number" imageMso="MailMergeResultsPreview" onAction="InterfaceForSpellNumber_Ribbon" visible="true" size="large" getEnabled="GetEnabled" />
           <button id="FormatCommonwealth" label="Format Commonwealth" imageMso="CrossReferenceInsert" onAction="FormatCommonwealth_Ribbon" visible="true" size="large" getEnabled="GetEnabled" />
+          <button id="FormatTableTermDates" label="Delete Term Dates" imageMso="CrossReferenceInsert" onAction="RemoveTerDAtesFromFeeSchedule_Ribbon" visible="true" size="large" getEnabled="GetEnabled" />
         </group>
       </tab>
     </tabs>

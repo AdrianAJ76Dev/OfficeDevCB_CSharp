@@ -156,6 +156,11 @@ namespace CB_Utilities_v6_9
             CleanUpUtilities.SpellOutNumber();
         }
 
+        public void RemoveTerDAtesFromFeeSchedule_Ribbon(Office.IRibbonControl rbnCtrl)
+        {
+            CleanUpUtilities.RemoveTerDatesFromFeeSchedule();
+        }
+
         public bool GetEnabled(Office.IRibbonControl rbnCtrl)
         {
             return true;

@@ -108,12 +108,15 @@ namespace CB_Utilities_v6_9
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
             Word.Range tmprange = Globals.ThisAddIn.Application.ActiveDocument.StoryRanges[Word.WdStoryType.wdMainTextStory];
             const string strFIND_SIGNATURE_PAGE_TEXT = "Signature";
+
+            TurnOffOnTrackChangesDisplay();
             do
             {
                 tmprange.Find.Execute(strFIND_SIGNATURE_PAGE_TEXT, Word.WdFindWrap.wdFindContinue);
                 tmprange.Select();
             } while (tmprange.Find.Found == true && tmprange.Information[Word.WdInformation.wdWithInTable] == false);
 
+            TurnOffOnTrackChangesDisplay();
             return sel.Information[Word.WdInformation.wdActiveEndPageNumber];
         }
 
@@ -136,6 +139,7 @@ namespace CB_Utilities_v6_9
             Word.Range searchrange = sel.Range;
             Word.Range endrange = sel.Range;
 
+            TurnOffOnTrackChangesDisplay();
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
             sel.Find.Text = regexpatternword;
             sel.Find.MatchWildcards = true;
@@ -169,6 +173,7 @@ namespace CB_Utilities_v6_9
                 }
                 endrange.Select();
             }
+            TurnOffOnTrackChangesDisplay();
         }
 
         public static void SpellOutNumber()
@@ -184,6 +189,7 @@ namespace CB_Utilities_v6_9
             strNumber = strJustNumbers.Split('.')[0];
             strDecimals = strJustNumbers.Split('.')[1];
 
+            TurnOffOnTrackChangesDisplay();
             if (int.TryParse(strNumber, out int resultNumber))
             {
                 strSpelledOutNumber += Spell(resultNumber);
@@ -199,7 +205,7 @@ namespace CB_Utilities_v6_9
                 sel.MoveEnd(Word.WdUnits.wdCharacter, -1);
             }
             sel.Text = strSpelledOutNumber;
-
+            TurnOffOnTrackChangesDisplay();
         }
 
         public static void SpellOutMonth()
@@ -209,6 +215,7 @@ namespace CB_Utilities_v6_9
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
             string DateNumberFormat;
 
+            TurnOffOnTrackChangesDisplay();
             if (sel.Text.Contains(CHAR_WORD_PARAGRAPH))
             {
                 sel.MoveEnd(Word.WdUnits.wdCharacter, -1);
@@ -222,6 +229,8 @@ namespace CB_Utilities_v6_9
             else
                 MessageBox.Show("A date doesn't appear to be selected\n", "Spell Out Date",
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+            TurnOffOnTrackChangesDisplay();
         }
 
         public static void FormatPhoneNumber()
@@ -233,6 +242,8 @@ namespace CB_Utilities_v6_9
             strPhoneNumberDigits = sel.Words[1].Text;
             strPhoneNumberDigits = strPhoneNumberDigits.Trim();
 
+            TurnOffOnTrackChangesDisplay();
+
             if (strPhoneNumberDigits.Length == 10 && int.TryParse(strPhoneNumberDigits, out int result))
             {
                 strPhoneNumberDigits = result.ToString(PHONE_FORMAT);
@@ -242,6 +253,8 @@ namespace CB_Utilities_v6_9
                 MessageBox.Show("Your selection does not solely consist of numbers\n"
                     + "or consists of more than or less than 10 digits - Number Count: " + strPhoneNumberDigits.Length,
                     "Format Phone #", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+            TurnOffOnTrackChangesDisplay();
         }
 
         public static void FormatCommonwealth()
@@ -260,6 +273,8 @@ namespace CB_Utilities_v6_9
             bool IsCommonwealth = false;
             //string[] aresult;
             string[] acommonwealths = { "Kentucky", "Massachusetts", "Pennsylvania", "Virginia" };
+
+            TurnOffOnTrackChangesDisplay();
 
             sel.HomeKey(Word.WdUnits.wdStory);
             wrdState = activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE];
@@ -280,16 +295,93 @@ namespace CB_Utilities_v6_9
             }
 
             rngSelectedStateOfPhrase.Select();
+
+            TurnOffOnTrackChangesDisplay();
+        }
+
+        public static void RemoveTerDatesFromFeeSchedule()
+        {
+            Word.Table tbl;
+            Word.Table tblNewFromSplit;
+            int rowHeaderRowColumnCount;
+            Word.Selection sel = Globals.ThisAddIn.Application.Selection;
+            Word.Application app = Globals.ThisAddIn.Application;
+
+            const string BMK_NAME_PARAGRAPH_SPLIT = "SplitTableParagarph";
+            const string BMK_NAME_SPLIT_TABLE2 = "SplitTable2";
+
+            if (sel.Information[Word.WdInformation.wdWithInTable])
+            {
+                app.DisplayAlerts = Word.WdAlertLevel.wdAlertsNone;
+                app.ScreenUpdating = false;
+
+                tbl = sel.Tables[1];
+                tbl.AllowAutoFit = false;
+
+                rowHeaderRowColumnCount = tbl.Rows[1].Cells.Count;
+                /* Take the 1st rows count of columns --- that's the header --- and cycle through the rows until reaching a row that
+                 * has a DIFFERENT column count
+                 */
+                foreach (Word.Row currRow in tbl.Rows)
+                {
+                    if (currRow.Cells.Count != rowHeaderRowColumnCount)
+                    {
+                        currRow.Select();
+                        // Get reference to bottom half of table because of split by adding bookmark
+                        sel.Bookmarks.Add(BMK_NAME_SPLIT_TABLE2, sel.Range);
+                        sel.SplitTable();
+                        sel.Bookmarks.Add(BMK_NAME_PARAGRAPH_SPLIT, sel.Range);
+
+                        tblNewFromSplit = app.ActiveDocument.Bookmarks[BMK_NAME_SPLIT_TABLE2].Range.Tables[1];
+
+                        //The original table selected, before the split, is the "top half" of the table
+                        tbl.Columns[2].Select();
+                        tbl.Columns[2].Delete();
+                        tbl.Columns[2].Select();
+                        tbl.Columns[2].Delete();
+
+                        foreach (Word.Cell c in tbl.Columns[2].Cells)
+                        {
+                            c.Range.ParagraphFormat.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                        }
+
+                        app.ActiveDocument.Bookmarks[BMK_NAME_SPLIT_TABLE2].Delete();
+
+                        /* New method of resizing table parts
+                         * Resize Table Top - Table 1 of split, the size of window
+                         */
+                        tbl.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
+                        tblNewFromSplit.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
+
+                        tbl.AllowAutoFit = false;
+                        tblNewFromSplit.AllowAutoFit = false;
+                        app.ActiveDocument.Bookmarks[BMK_NAME_PARAGRAPH_SPLIT].Range.Delete();
+                        app.ActiveDocument.Bookmarks[BMK_NAME_PARAGRAPH_SPLIT].Delete();
+
+                        //Reinforce resize of entier table
+                        tbl.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
+                        break;
+                    }
+                }
+            }
+            else
+                MessageBox.Show("You have to 1st put the cursor into a table", "Remove Term Date Columns in Fee Schedule", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            app.DisplayAlerts = Word.WdAlertLevel.wdAlertsAll;
+            app.ScreenUpdating = true;
         }
 
         private static void RemoveSurroundingTables()
         {
+            TurnOffOnTrackChangesDisplay();
+
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
             do
             {
                 sel.Rows.ConvertToText(Word.WdTableFieldSeparator.wdSeparateByParagraphs, false);
             } while (sel.Information[Word.WdInformation.wdWithInTable]);
 
+            TurnOffOnTrackChangesDisplay();
             //sel.ParagraphFormat.SpaceAfter = 0.0;
         }
 
@@ -325,11 +417,12 @@ namespace CB_Utilities_v6_9
             baseWords.Add(80, "eighty");
             baseWords.Add(90, "ninety");
 
+            TurnOffOnTrackChangesDisplay();
+
             if (number >= 1000)
             {
                 return Spell(number / 1000) + " thousand " + Spell(number % 1000);
             }
-
             if (number >= 100)
             {
                 return Spell(number / 100) + " hundred " + Spell(number % 100);
@@ -338,7 +431,20 @@ namespace CB_Utilities_v6_9
             {
                 return baseWords[number / 10 * 10] + " " + baseWords[number % 10];
             }
+
+            TurnOffOnTrackChangesDisplay();
+
             return baseWords[number].ToString();
+        }
+
+        private static void TurnOffOnTrackChangesDisplay()
+        {
+            if (Globals.ThisAddIn.Application.ActiveDocument.ShowRevisions)
+            {
+                Globals.ThisAddIn.Application.ActiveDocument.ShowRevisions = false;
+            }
+            else
+                Globals.ThisAddIn.Application.ActiveDocument.ShowRevisions = true;
         }
     }
 }
