@@ -109,14 +109,14 @@ namespace CB_Utilities_v6_9
             Word.Range tmprange = Globals.ThisAddIn.Application.ActiveDocument.StoryRanges[Word.WdStoryType.wdMainTextStory];
             const string strFIND_SIGNATURE_PAGE_TEXT = "Signature";
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(false);
             do
             {
                 tmprange.Find.Execute(strFIND_SIGNATURE_PAGE_TEXT, Word.WdFindWrap.wdFindContinue);
                 tmprange.Select();
             } while (tmprange.Find.Found == true && tmprange.Information[Word.WdInformation.wdWithInTable] == false);
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(true);
             return sel.Information[Word.WdInformation.wdActiveEndPageNumber];
         }
 
@@ -139,7 +139,7 @@ namespace CB_Utilities_v6_9
             Word.Range searchrange = sel.Range;
             Word.Range endrange = sel.Range;
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(false);
             Regex regex = new Regex(regexpattern, RegexOptions.IgnoreCase);
             sel.Find.Text = regexpatternword;
             sel.Find.MatchWildcards = true;
@@ -173,7 +173,7 @@ namespace CB_Utilities_v6_9
                 }
                 endrange.Select();
             }
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(true);
         }
 
         public static void SpellOutNumber()
@@ -189,7 +189,7 @@ namespace CB_Utilities_v6_9
             strNumber = strJustNumbers.Split('.')[0];
             strDecimals = strJustNumbers.Split('.')[1];
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(false);
             if (int.TryParse(strNumber, out int resultNumber))
             {
                 strSpelledOutNumber += Spell(resultNumber);
@@ -205,7 +205,7 @@ namespace CB_Utilities_v6_9
                 sel.MoveEnd(Word.WdUnits.wdCharacter, -1);
             }
             sel.Text = strSpelledOutNumber;
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(true);
         }
 
         public static void SpellOutMonth()
@@ -215,7 +215,7 @@ namespace CB_Utilities_v6_9
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
             string DateNumberFormat;
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(false);
             if (sel.Text.Contains(CHAR_WORD_PARAGRAPH))
             {
                 sel.MoveEnd(Word.WdUnits.wdCharacter, -1);
@@ -230,7 +230,7 @@ namespace CB_Utilities_v6_9
                 MessageBox.Show("A date doesn't appear to be selected\n", "Spell Out Date",
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(true);
         }
 
         public static void FormatPhoneNumber()
@@ -242,9 +242,9 @@ namespace CB_Utilities_v6_9
             strPhoneNumberDigits = sel.Words[1].Text;
             strPhoneNumberDigits = strPhoneNumberDigits.Trim();
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(false);
 
-            if (strPhoneNumberDigits.Length == 10 && int.TryParse(strPhoneNumberDigits, out int result))
+            if (strPhoneNumberDigits.Length == 10 && long.TryParse(strPhoneNumberDigits, out long result))
             {
                 strPhoneNumberDigits = result.ToString(PHONE_FORMAT);
                 sel.Words[1].Text = strPhoneNumberDigits;
@@ -254,7 +254,7 @@ namespace CB_Utilities_v6_9
                     + "or consists of more than or less than 10 digits - Number Count: " + strPhoneNumberDigits.Length,
                     "Format Phone #", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(true);
         }
 
         public static void FormatCommonwealth()
@@ -274,7 +274,7 @@ namespace CB_Utilities_v6_9
             //string[] aresult;
             string[] acommonwealths = { "Kentucky", "Massachusetts", "Pennsylvania", "Virginia" };
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(false);
 
             sel.HomeKey(Word.WdUnits.wdStory);
             wrdState = activedocument.Paragraphs[PARA_COMMONWEALTH].Range.Words[POSITION_STATE];
@@ -296,7 +296,7 @@ namespace CB_Utilities_v6_9
 
             rngSelectedStateOfPhrase.Select();
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(true);
         }
 
         public static void RemoveTerDatesFromFeeSchedule()
@@ -373,7 +373,7 @@ namespace CB_Utilities_v6_9
 
         private static void RemoveSurroundingTables()
         {
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(false);
 
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
             do
@@ -381,7 +381,7 @@ namespace CB_Utilities_v6_9
                 sel.Rows.ConvertToText(Word.WdTableFieldSeparator.wdSeparateByParagraphs, false);
             } while (sel.Information[Word.WdInformation.wdWithInTable]);
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(true);
             //sel.ParagraphFormat.SpaceAfter = 0.0;
         }
 
@@ -417,7 +417,7 @@ namespace CB_Utilities_v6_9
             baseWords.Add(80, "eighty");
             baseWords.Add(90, "ninety");
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(false);
 
             if (number >= 1000)
             {
@@ -432,19 +432,14 @@ namespace CB_Utilities_v6_9
                 return baseWords[number / 10 * 10] + " " + baseWords[number % 10];
             }
 
-            TurnOffOnTrackChangesDisplay();
+            TurnOffOnTrackChangesDisplay(true);
 
             return baseWords[number].ToString();
         }
 
-        private static void TurnOffOnTrackChangesDisplay()
+        private static void TurnOffOnTrackChangesDisplay(bool switchOnOff)
         {
-            if (Globals.ThisAddIn.Application.ActiveDocument.ShowRevisions)
-            {
-                Globals.ThisAddIn.Application.ActiveDocument.ShowRevisions = false;
-            }
-            else
-                Globals.ThisAddIn.Application.ActiveDocument.ShowRevisions = true;
+            Globals.ThisAddIn.Application.ActiveDocument.ShowRevisions = switchOnOff;
         }
     }
 }
