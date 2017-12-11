@@ -437,9 +437,10 @@ namespace CB_Utilities_v6_9
             return baseWords[number].ToString();
         }
 
-        private static void TurnOffOnTrackChangesDisplay(bool switchOnOff)
+        public static void TurnOffOnTrackChangesDisplay(bool switchOnOff)
         {
             Globals.ThisAddIn.Application.ActiveDocument.ShowRevisions = switchOnOff;
+            Globals.ThisAddIn.Application.ScreenRefresh();
         }
     }
 }

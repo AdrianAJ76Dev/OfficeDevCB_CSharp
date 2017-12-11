@@ -82,7 +82,8 @@ namespace CB_Utilities_v6_9
             DialogResult lngResult;
             long lngPageNumberSignaturePage;
             Word.Selection sel;
-            Word.AutoTextEntry hedaddendum;
+            // Word.AutoTextEntry atxhedaddendum;
+            Word.BuildingBlock hedaddendum;
             Word.Template tmpl;
 
             const string strAUTOTEXT_AMENDMENT = "HSA - HED Standard Addendum";
@@ -109,20 +110,20 @@ namespace CB_Utilities_v6_9
                     sel.Delete();
 
                     // 07/26/2017 This template is not found even though I have a copy here now.
-                    string templatefullname = @"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v61.dotm";
-                    
+                    string templatefullname = @"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v62.dotx";
+
                     /* 07/27/2017 Of course the templates collection is a collection of all loaded add-ins
                      * so I may have to load the add-in here because it's no longer in Startup
                     */
                     tmpl = Globals.ThisAddIn.Application.Templates[templatefullname];
-
-                    hedaddendum = tmpl.AutoTextEntries[strAUTOTEXT_AMENDMENT];
+                    hedaddendum = tmpl.BuildingBlockEntries.Item(strAUTOTEXT_AMENDMENT);
                     hedaddendum.Insert(sel.Range, true);
 
                     // Remove paragraph page before and consolidate signature page and Amendment page.
-                    sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, SIGNATURE_PAGE_AMENDMENT);
-                    sel.Range.ParagraphFormat.PageBreakBefore=-1;
-                    sel.HomeKey(Word.WdUnits.wdStory);
+                    sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
+                    Globals.ThisAddIn.Application.ScreenRefresh();
+                    sel.Range.ParagraphFormat.PageBreakBefore=0;
+                    CleanUpUtilities.TurnOffOnTrackChangesDisplay(true);
                 }
             }
             catch (Exception)
