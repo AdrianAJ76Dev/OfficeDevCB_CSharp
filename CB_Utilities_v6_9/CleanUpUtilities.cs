@@ -103,6 +103,65 @@ namespace CB_Utilities_v6_9
             }
         }
 
+        public static void MakeHEDAmendment()
+        {
+            /* 07/27/2017 Create another class that handles all of this code or put it
+             * in The CleanUpUtilites class and change its name to just Utilities
+            */
+            DialogResult lngResult;
+            long lngPageNumberSignaturePage;
+            Word.Selection sel;
+            // Word.AutoTextEntry atxhedaddendum;
+            Word.BuildingBlock hedaddendum;
+            Word.Template tmpl;
+
+            const string strAUTOTEXT_AMENDMENT = "HSA - HED Standard Addendum";
+            const int SIGNATURE_PAGE_AMENDMENT = 2;
+            try
+            {
+                string msg = "This deletes pages in the main part of the agreement\n" +
+                    "up to the signature page and then replaces those removed pages\n" +
+                    "with the standard Higher Education Amendment Page.";
+
+                string caption = "Make HED Amendment";
+
+                lngResult = MessageBox.Show(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+
+                if (lngResult == DialogResult.Yes)
+                {
+                    CleanUpUtilities.TurnOffOnTrackChangesDisplay(false);
+                    lngPageNumberSignaturePage = CleanUpUtilities.FindSignaturePage();
+
+                    sel = Globals.ThisAddIn.Application.Selection;
+                    sel.HomeKey(Word.WdUnits.wdStory);
+                    sel.Extend();
+                    sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
+                    sel.Delete();
+
+                    // 07/26/2017 This template is not found even though I have a copy here now.
+                    string templatefullname = @"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v62.dotx";
+
+                    /* 07/27/2017 Of course the templates collection is a collection of all loaded add-ins
+                     * so I may have to load the add-in here because it's no longer in Startup
+                    */
+                    tmpl = Globals.ThisAddIn.Application.Templates[templatefullname];
+                    hedaddendum = tmpl.BuildingBlockEntries.Item(strAUTOTEXT_AMENDMENT);
+                    hedaddendum.Insert(sel.Range, true);
+
+                    lngPageNumberSignaturePage = CleanUpUtilities.FindSignaturePage();
+                    // Remove paragraph page before and consolidate signature page and Amendment page.
+                    sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
+                    Globals.ThisAddIn.Application.ScreenRefresh();
+                    sel.Range.ParagraphFormat.PageBreakBefore = 0;
+                    CleanUpUtilities.TurnOffOnTrackChangesDisplay(true);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public static int FindSignaturePage()
         {
             Word.Selection sel = Globals.ThisAddIn.Application.Selection;
@@ -387,35 +446,37 @@ namespace CB_Utilities_v6_9
 
         private static string Spell(int number)
         {
-            var baseWords = new Hashtable();
-            baseWords.Add(0, "");
-            baseWords.Add(1, "one");
-            baseWords.Add(2, "two");
-            baseWords.Add(3, "three");
-            baseWords.Add(4, "four");
-            baseWords.Add(5, "five");
-            baseWords.Add(6, "six");
-            baseWords.Add(7, "seven");
-            baseWords.Add(8, "eight");
-            baseWords.Add(9, "nine");
-            baseWords.Add(10, "ten");
-            baseWords.Add(11, "eleven");
-            baseWords.Add(12, "twelve");
-            baseWords.Add(13, "thirteen");
-            baseWords.Add(14, "fourteen");
-            baseWords.Add(15, "fifteen");
-            baseWords.Add(16, "sixteen");
-            baseWords.Add(17, "seventeen");
-            baseWords.Add(18, "eighteen");
-            baseWords.Add(19, "nineteen");
-            baseWords.Add(20, "twenty");
-            baseWords.Add(30, "thirty");
-            baseWords.Add(40, "forty");
-            baseWords.Add(50, "fifty");
-            baseWords.Add(60, "sixty");
-            baseWords.Add(70, "seventy");
-            baseWords.Add(80, "eighty");
-            baseWords.Add(90, "ninety");
+            var baseWords = new Hashtable
+            {
+                { 0, "" },
+                { 1, "one" },
+                { 2, "two" },
+                { 3, "three" },
+                { 4, "four" },
+                { 5, "five" },
+                { 6, "six" },
+                { 7, "seven" },
+                { 8, "eight" },
+                { 9, "nine" },
+                { 10, "ten" },
+                { 11, "eleven" },
+                { 12, "twelve" },
+                { 13, "thirteen" },
+                { 14, "fourteen" },
+                { 15, "fifteen" },
+                { 16, "sixteen" },
+                { 17, "seventeen" },
+                { 18, "eighteen" },
+                { 19, "nineteen" },
+                { 20, "twenty" },
+                { 30, "thirty" },
+                { 40, "forty" },
+                { 50, "fifty" },
+                { 60, "sixty" },
+                { 70, "seventy" },
+                { 80, "eighty" },
+                { 90, "ninety" }
+            };
 
             TurnOffOnTrackChangesDisplay(false);
 
