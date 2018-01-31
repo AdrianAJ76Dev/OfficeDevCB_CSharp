@@ -50,7 +50,9 @@ namespace CB_Utilities_v6_9
         #endregion
 
         #region Ribbon Callbacks
-        //Create callback methods here. For more information about adding callback methods, visit https://go.microsoft.com/fwlink/?LinkID=271226
+        /* Create callback methods here. For more information about adding callback methods, 
+         * visit https://go.microsoft.com/fwlink/?LinkID=271226
+         */
 
         public void Ribbon_Load(Office.IRibbonUI ribbonUI)
         {
@@ -65,7 +67,7 @@ namespace CB_Utilities_v6_9
             }
             catch (Exception e)
             {
-                throw e;
+                MessageBox.Show(e.Message,"Remove Unnecessary Riders",MessageBoxButtons.OK,MessageBoxIcon.Error);
             }
         }
 
@@ -82,38 +84,80 @@ namespace CB_Utilities_v6_9
             }
             catch (Exception e)
             {
-                throw e;
+                MessageBox.Show(e.Message, "Make HED Amendment", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         public void FormatPrice_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            CleanUpUtilities.FormatPrice();
+            try
+            {
+                CleanUpUtilities.FormatPrice();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Format Price", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public void FormatDateSpellOutMonth_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            CleanUpUtilities.SpellOutMonth();
+            try
+            {
+                CleanUpUtilities.SpellOutMonth();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Spell Out Month", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public void FormatPhoneNumber_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            CleanUpUtilities.FormatPhoneNumber();
+            try
+            {
+                CleanUpUtilities.FormatPhoneNumber();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Format Phone Number", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public void FormatCommonwealth_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            CleanUpUtilities.FormatCommonwealth();
+            try
+            {
+                CleanUpUtilities.FormatCommonwealth();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Format Commonwealth", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public void InterfaceForSpellNumber_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            CleanUpUtilities.SpellOutNumber();
+            try
+            {
+                    CleanUpUtilities.SpellOutNumber();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Spell Out Number", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public void RemoveTerDAtesFromFeeSchedule_Ribbon(Office.IRibbonControl rbnCtrl)
         {
-            CleanUpUtilities.RemoveTerDatesFromFeeSchedule();
+            try
+            {
+                CleanUpUtilities.RemoveTerDatesFromFeeSchedule();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Remove Term Dates From Fee Schedule", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public bool GetEnabled(Office.IRibbonControl rbnCtrl)

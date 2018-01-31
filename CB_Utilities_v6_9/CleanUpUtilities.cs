@@ -39,11 +39,17 @@ namespace CB_Utilities_v6_9
             // const string strRIDER_NAME_TOKEN = "-";
             const string strRIDER_HEADER = "Schedule to College Board";
 
+            if (!currentDoc.TrackRevisions)
+            {
+                currentDoc.TrackRevisions = true;
+                currentDoc.ShowRevisions = false;
+            }
+
+            app.ScreenRefresh();
+            //app.ScreenUpdating = false;
+
             try
             {
-                if (!currentDoc.TrackRevisions)
-                    currentDoc.TrackRevisions = true;
-
                 if (currentDoc.Fields.Count != 0)
                 {
                     foreach (Word.Field fld in currentDoc.Fields)
@@ -63,7 +69,8 @@ namespace CB_Utilities_v6_9
                              */
                             fldPara = fld.Result.Paragraphs[1];
                             fldRider = fld.Result;
-                            if (fld.Code.Text.Contains("\"False\" = \"True"))
+                            fldPara.Range.Select();
+                            if (fld.Code.Text.Contains("\"False\" = \"True\""))
                             {
                                 intUnnecessaryRiders++;
                             }
@@ -75,8 +82,8 @@ namespace CB_Utilities_v6_9
                                 if (fldRider.Find.Found)
                                     fldRider.ParagraphFormat.PageBreakBefore = -1;
                             }
-                            fldPara.Range.Select();
                             fldPara.Range.Delete();
+                            currentDoc.Fields.Update();
                             intRidersTotal++;
                         }
                         else
@@ -97,9 +104,18 @@ namespace CB_Utilities_v6_9
                             + "Number of Total Riders Found " + intRidersTotal);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                MessageBox.Show(e.Message, "Remove Unnecessary Riders", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            finally
+            {
+                if (!currentDoc.ShowRevisions)
+                    currentDoc.ShowRevisions = true;
+
+                app.ScreenUpdating = true;
+                app.ScreenRefresh();
             }
         }
 
@@ -369,65 +385,73 @@ namespace CB_Utilities_v6_9
             const string BMK_NAME_PARAGRAPH_SPLIT = "SplitTableParagarph";
             const string BMK_NAME_SPLIT_TABLE2 = "SplitTable2";
 
-            if (sel.Information[Word.WdInformation.wdWithInTable])
+            try
             {
-                app.DisplayAlerts = Word.WdAlertLevel.wdAlertsNone;
-                app.ScreenUpdating = false;
-
-                tbl = sel.Tables[1];
-                tbl.AllowAutoFit = false;
-
-                rowHeaderRowColumnCount = tbl.Rows[1].Cells.Count;
-                /* Take the 1st rows count of columns --- that's the header --- and cycle through the rows until reaching a row that
-                 * has a DIFFERENT column count
-                 */
-                foreach (Word.Row currRow in tbl.Rows)
+                if (sel.Information[Word.WdInformation.wdWithInTable])
                 {
-                    if (currRow.Cells.Count != rowHeaderRowColumnCount)
+                    app.DisplayAlerts = Word.WdAlertLevel.wdAlertsNone;
+                    app.ScreenUpdating = false;
+
+                    tbl = sel.Tables[1];
+                    tbl.AllowAutoFit = false;
+
+                    rowHeaderRowColumnCount = tbl.Rows[1].Cells.Count;
+                    /* Take the 1st rows count of columns --- that's the header --- and cycle through the rows until reaching a row that
+                     * has a DIFFERENT column count
+                     */
+                    foreach (Word.Row currRow in tbl.Rows)
                     {
-                        currRow.Select();
-                        // Get reference to bottom half of table because of split by adding bookmark
-                        sel.Bookmarks.Add(BMK_NAME_SPLIT_TABLE2, sel.Range);
-                        sel.SplitTable();
-                        sel.Bookmarks.Add(BMK_NAME_PARAGRAPH_SPLIT, sel.Range);
-
-                        tblNewFromSplit = app.ActiveDocument.Bookmarks[BMK_NAME_SPLIT_TABLE2].Range.Tables[1];
-
-                        //The original table selected, before the split, is the "top half" of the table
-                        tbl.Columns[2].Select();
-                        tbl.Columns[2].Delete();
-                        tbl.Columns[2].Select();
-                        tbl.Columns[2].Delete();
-
-                        foreach (Word.Cell c in tbl.Columns[2].Cells)
+                        if (currRow.Cells.Count != rowHeaderRowColumnCount)
                         {
-                            c.Range.ParagraphFormat.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                            currRow.Select();
+                            // Get reference to bottom half of table because of split by adding bookmark
+                            sel.Bookmarks.Add(BMK_NAME_SPLIT_TABLE2, sel.Range);
+                            sel.SplitTable();
+                            sel.Bookmarks.Add(BMK_NAME_PARAGRAPH_SPLIT, sel.Range);
+
+                            tblNewFromSplit = app.ActiveDocument.Bookmarks[BMK_NAME_SPLIT_TABLE2].Range.Tables[1];
+
+                            //The original table selected, before the split, is the "top half" of the table
+                            tbl.Columns[2].Select();
+                            tbl.Columns[2].Delete();
+                            tbl.Columns[2].Select();
+                            tbl.Columns[2].Delete();
+
+                            foreach (Word.Cell c in tbl.Columns[2].Cells)
+                            {
+                                c.Range.ParagraphFormat.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                            }
+
+                            app.ActiveDocument.Bookmarks[BMK_NAME_SPLIT_TABLE2].Delete();
+
+                            /* New method of resizing table parts
+                             * Resize Table Top - Table 1 of split, the size of window
+                             */
+                            tbl.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
+                            tblNewFromSplit.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
+
+                            tbl.AllowAutoFit = false;
+                            tblNewFromSplit.AllowAutoFit = false;
+                            app.ActiveDocument.Bookmarks[BMK_NAME_PARAGRAPH_SPLIT].Range.Delete();
+                            app.ActiveDocument.Bookmarks[BMK_NAME_PARAGRAPH_SPLIT].Delete();
+
+                            //Reinforce resize of entier table
+                            tbl.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
+                            break;
                         }
-
-                        app.ActiveDocument.Bookmarks[BMK_NAME_SPLIT_TABLE2].Delete();
-
-                        /* New method of resizing table parts
-                         * Resize Table Top - Table 1 of split, the size of window
-                         */
-                        tbl.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
-                        tblNewFromSplit.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
-
-                        tbl.AllowAutoFit = false;
-                        tblNewFromSplit.AllowAutoFit = false;
-                        app.ActiveDocument.Bookmarks[BMK_NAME_PARAGRAPH_SPLIT].Range.Delete();
-                        app.ActiveDocument.Bookmarks[BMK_NAME_PARAGRAPH_SPLIT].Delete();
-
-                        //Reinforce resize of entier table
-                        tbl.AutoFitBehavior(Word.WdAutoFitBehavior.wdAutoFitWindow);
-                        break;
                     }
                 }
-            }
-            else
-                MessageBox.Show("You have to 1st put the cursor into a table", "Remove Term Date Columns in Fee Schedule", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                    MessageBox.Show("You have to 1st put the cursor into a table", "Remove Term Date Columns in Fee Schedule", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            app.DisplayAlerts = Word.WdAlertLevel.wdAlertsAll;
-            app.ScreenUpdating = true;
+                app.DisplayAlerts = Word.WdAlertLevel.wdAlertsAll;
+                app.ScreenUpdating = true;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+
         }
 
         private static void RemoveSurroundingTables()
