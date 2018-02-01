@@ -83,8 +83,13 @@ namespace CB_Utilities_v6_9
                                     fldRider.ParagraphFormat.PageBreakBefore = -1;
                             }
                             fldPara.Range.Delete();
-                            currentDoc.Fields.Update();
                             intRidersTotal++;
+                            currentDoc.AcceptAllRevisions();
+                            app.ScreenRefresh();
+                            if (app.Selection.Characters.Count==1)
+                            {
+                                app.Selection.Paragraphs[1].Range.Delete();
+                            }
                         }
                         else
                         {
