@@ -46,7 +46,6 @@ namespace CB_Utilities_v6_9
             }
 
             app.ScreenRefresh();
-            //app.ScreenUpdating = false;
 
             try
             {
@@ -73,23 +72,24 @@ namespace CB_Utilities_v6_9
                             if (fld.Code.Text.Contains("\"False\" = \"True\""))
                             {
                                 intUnnecessaryRiders++;
+                                if (app.Selection.Characters.Count == 1)
+                                {
+                                    app.Selection.Paragraphs[1].Range.Delete();
+                                }
                             }
                             else
                             {
                                 fld.Unlink();
-                                intNecessaryRiders++;
                                 fldRider.Find.Execute(strRIDER_HEADER);
                                 if (fldRider.Find.Found)
+                                {
                                     fldRider.ParagraphFormat.PageBreakBefore = -1;
+                                    intNecessaryRiders++;
+                                }
                             }
                             fldPara.Range.Delete();
-                            intRidersTotal++;
                             currentDoc.AcceptAllRevisions();
                             app.ScreenRefresh();
-                            if (app.Selection.Characters.Count==1)
-                            {
-                                app.Selection.Paragraphs[1].Range.Delete();
-                            }
                         }
                         else
                         {
@@ -99,12 +99,13 @@ namespace CB_Utilities_v6_9
                         }
                     }
 
+                    intRidersTotal = intNecessaryRiders + intUnnecessaryRiders;
                     if (intRidersTotal == 0)
                     {
                         MessageBox.Show("No Riders exist in this document:\n");
                     }
                     else
-                        MessageBox.Show("Number of Unnecessary Riders Found: " + intUnnecessaryRiders + "\n"
+                    MessageBox.Show("Number of Unnecessary Riders Found: " + intUnnecessaryRiders + "\n"
                             + "Number of Necessary Riders Found " + intNecessaryRiders + "\n"
                             + "Number of Total Riders Found " + intRidersTotal);
                 }
@@ -137,45 +138,59 @@ namespace CB_Utilities_v6_9
             Word.Template tmpl;
 
             const string strAUTOTEXT_AMENDMENT = "HSA - HED Standard Addendum";
+            const string strAGREEMENT_K12 = "COLLEGE READINESS";
+            const string strAGREEMENT_HED = "ENROLLMENT AGREEMENT";
             const int SIGNATURE_PAGE_AMENDMENT = 2;
+
+            bool foundHEDAgreement;
+
             try
             {
                 string msg = "This deletes pages in the main part of the agreement\n" +
                     "up to the signature page and then replaces those removed pages\n" +
                     "with the standard Higher Education Amendment Page.";
 
+                string msg2 = "Currently, Amendments can only be made from Higher Ed contracts\nComing Soon for K12";
+
                 string caption = "Make HED Amendment";
 
-                lngResult = MessageBox.Show(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                sel = Globals.ThisAddIn.Application.Selection;
+                foundHEDAgreement = sel.Find.Execute(strAGREEMENT_HED);
 
-                if (lngResult == DialogResult.Yes)
+                if (foundHEDAgreement)
                 {
-                    CleanUpUtilities.TurnOffOnTrackChangesDisplay(false);
-                    lngPageNumberSignaturePage = CleanUpUtilities.FindSignaturePage();
+                    lngResult = MessageBox.Show(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    if (lngResult == DialogResult.Yes)
+                    {
+                        CleanUpUtilities.TurnOffOnTrackChangesDisplay(false);
+                        lngPageNumberSignaturePage = CleanUpUtilities.FindSignaturePage();
 
-                    sel = Globals.ThisAddIn.Application.Selection;
-                    sel.HomeKey(Word.WdUnits.wdStory);
-                    sel.Extend();
-                    sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
-                    sel.Delete();
+                        sel = Globals.ThisAddIn.Application.Selection;
+                        sel.HomeKey(Word.WdUnits.wdStory);
+                        sel.Extend();
+                        sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
+                        sel.Delete();
 
-                    // 07/26/2017 This template is not found even though I have a copy here now.
-                    string templatefullname = @"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v62.dotx";
+                        // 07/26/2017 This template is not found even though I have a copy here now.
+                        string templatefullname = @"\\nyodska01\cbwide\RAS Contracts Management\Training Documents\CM Utilities v62.dotx";
 
-                    /* 07/27/2017 Of course the templates collection is a collection of all loaded add-ins
-                     * so I may have to load the add-in here because it's no longer in Startup
-                    */
-                    tmpl = Globals.ThisAddIn.Application.Templates[templatefullname];
-                    hedaddendum = tmpl.BuildingBlockEntries.Item(strAUTOTEXT_AMENDMENT);
-                    hedaddendum.Insert(sel.Range, true);
+                        /* 07/27/2017 Of course the templates collection is a collection of all loaded add-ins
+                         * so I may have to load the add-in here because it's no longer in Startup
+                        */
+                        tmpl = Globals.ThisAddIn.Application.Templates[templatefullname];
+                        hedaddendum = tmpl.BuildingBlockEntries.Item(strAUTOTEXT_AMENDMENT);
+                        hedaddendum.Insert(sel.Range, true);
 
-                    lngPageNumberSignaturePage = CleanUpUtilities.FindSignaturePage();
-                    // Remove paragraph page before and consolidate signature page and Amendment page.
-                    sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
-                    Globals.ThisAddIn.Application.ScreenRefresh();
-                    sel.Range.ParagraphFormat.PageBreakBefore = 0;
-                    CleanUpUtilities.TurnOffOnTrackChangesDisplay(true);
+                        lngPageNumberSignaturePage = CleanUpUtilities.FindSignaturePage();
+                        // Remove paragraph page before and consolidate signature page and Amendment page.
+                        sel.GoTo(Word.WdGoToItem.wdGoToPage, Word.WdGoToDirection.wdGoToNext, Word.WdGoToDirection.wdGoToAbsolute, lngPageNumberSignaturePage);
+                        Globals.ThisAddIn.Application.ScreenRefresh();
+                        sel.Range.ParagraphFormat.PageBreakBefore = 0;
+                        CleanUpUtilities.TurnOffOnTrackChangesDisplay(true);
+                    }
                 }
+                else
+                    MessageBox.Show(msg2, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             }
             catch (Exception)
             {
